@@ -19,7 +19,12 @@ const turnosDelDia = [
 ];
 
 const DashboardRecepcion = () => {
+    const [busqueda, setBusqueda] = useState("");
     const [turnos, setTurnos] = useState(turnosDelDia);
+
+    const turnosFiltrados = turnos.filter(turno =>
+        turno.pacientes.toLocaleLowerCase().includes(busqueda.toLocaleLowerCase())
+    );
 
     const marcarComoAtendido = (idTurno) => {
         const turnosActualizados = turnos.map(turno => {
@@ -32,24 +37,34 @@ const DashboardRecepcion = () => {
     return (
         <Container className="mt-4">
             <h2 className="mb-4">Turnos del Día</h2>
+            <Row className="mb-4">
+                <Col md={6}>
+                    <input 
+                        type="text"
+                        className="form-control"
+                        placeholder="Buscar Paciente..."
+                        value={busqueda}
+                        onChange={(evento) => setBusqueda(evento.target.value)}
+                    />
+                </Col>    
+            </Row>
+
             <Row>
-                {turnos.map((turno) => (
-                  <Col md={4} key={turno.id} className="mb-3">
-                    <Card>
-                        <Card.Body>  
-                          <Card.Title>{turno.pacientes}</Card.Title>
-                          <h5 className="mt-3">
-                              {turno.estado === 'Atendido' 
-                                  ? <Badge bg="success">Atendido</Badge>
-                                  : <Badge bg="warning" text="dark">En Espera</Badge>
-                              }
-                          </h5>
-                          <Button onClick={() => marcarComoAtendido(turno.id)} disabled={turno.estado === 'Atendido'}>
-                            Llamar
-                          </Button>
-                        </Card.Body>
-                    </Card>
-                  </Col>
+                {turnosFiltrados.map((turno) => (
+                    <Col md={4} key={turno.id} className="mb-3">
+                        <Card>
+                            <Card.Body>
+                                <Card.Title>{turno.pacientes}</Card.Title>
+                                <h5 className="mt-3">
+                                    {turno.estado === 'Atendido' 
+                                        ? <Badge bg="success">Atendido</Badge> 
+                                        : <Badge bg="warning" text="dark"> En Espera</Badge>
+                                    }
+                                </h5>
+                                <Button onClick={() => marcarComoAtendido(turno.id)} disabled={turno.estado === 'Atendido'}>Llamar</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 ))}
             </Row>
         </Container>
