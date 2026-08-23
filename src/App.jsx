@@ -1,25 +1,28 @@
-import Header from "./components/Header";
-import PacienteCard from "./components/PacienteCard";
-
-import "./App.css";
+import { useState } from 'react';
+import { Button, Container, Badge } from 'react-bootstrap';
 
 function App() {
+  const [estadoPaciente, setEstadoPaciente] = useState("Pendiente");
+
+  const atender = () => {
+    setEstadoPaciente("Atendido");
+    console.log("Variable en memoria:", estadoPaciente);
+  }
+
   return (
     <>
-      <Header />
-
-      <PacienteCard
-        nombre="Juan Perez"
-        obraSocial="OSDE"
-        dni="12345678"
-      />
-
-      <PacienteCard
-        nombre="Maria Lopez"
-        dni="87654321"
-      />
+      <Container className="mt-5">
+        <h2>Estado del turno: 
+          <Badge bg={estadoPaciente === "Atendido" ? "success" : "warning"} className="ms-2">
+            {estadoPaciente}
+          </Badge>
+        </h2>
+        <Button onClick={atender} disabled={estadoPaciente === "Atendido"}>
+          Llamar paciente
+        </Button>
+      </Container>
     </>
-  );
+  )
 }
 
 export default App;
