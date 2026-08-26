@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import styles from './FormularioPaciente.module.scss';
-import JsonDebugger from '../utils/jsondebugger';
+import { useState } from "react";
+import styles from "./FormularioPaciente.module.scss";
+import JsonDebugger from "../utils/jsondebugger";
 
 const FormularioPaciente = () => {
-
     const [paciente, setPaciente] = useState({
-        nombre: '',
-        apellido: '',
-        dni: '',
-        email: '',
-        telefono: '',
-        fechaNacimiento: '',
-        direccion: ''
+        nombre: "",
+        apellido: "",
+        dni: "",
+        email: "",
+        telefono: "",
+        fechaNacimiento: "",
+        direccion: ""
     });
 
     const handleChange = (event) => {

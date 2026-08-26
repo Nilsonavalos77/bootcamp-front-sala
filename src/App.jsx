@@ -1,15 +1,7 @@
-import DashboardRecepcion from "./pages/DashboardRecepcion"
-import formularioPaciente from "./components/pacientes/FormularioPaciente.jsx"
-
+import DashboardRecepcion from "./pages/DashboardRecepcion";
 
 function App() {
-
-  return (
-    <>
-      <DashboardRecepcion></DashboardRecepcion>
-      <formularioPaciente></formularioPaciente>
-    </>
-  )
+    return <DashboardRecepcion />;
 }
 
-export default App
+export default App;

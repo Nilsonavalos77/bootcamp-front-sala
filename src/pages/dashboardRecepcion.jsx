@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { Container, Badge, Row, Col, Card, Button } from "react-bootstrap";
-import FormularioPaciente from "../components/pacientes/FormularioPaciente.jsx";
+import FormularioPaciente from "../components/pacientes/FormularioPaciente";
 
 const turnosDelDia = [
-    { id: 1, pacientes: "Tomas Gallardo", especialidad: "Cardiologia", estado: "pendiente"},
-    { id: 2, pacientes: "Marina Lopez", especialidad: "Clinica Medica", estado: "pendiente"},
-    { id: 3, pacientes: "Susana", especialidad: "Oftalmologia", estado: "pendiente"},
-    { id: 4, pacientes: "Roque Gimenez", especialidad: "Pediatria", estado: "pendiente"},
-    { id: 5, pacientes: "Ernesto Roura", especialidad: "Cardiologia", estado: "pendiente"},
-    { id: 6, pacientes: "Juan Pared", especialidad: "Cardiologia", estado: "pendiente"},
-    { id: 7, pacientes: "Marisol Nuñez", especialidad: "Cardiologia", estado: "pendiente"}
+    { id: 1, pacientes: "Tomas Gallardo", especialidad: "Cardiologia", estado: "pendiente" },
+    { id: 2, pacientes: "Marina Lopez", especialidad: "Clinica Medica", estado: "pendiente" },
+    { id: 3, pacientes: "Susana", especialidad: "Oftalmologia", estado: "pendiente" },
+    { id: 4, pacientes: "Roque Gimenez", especialidad: "Pediatria", estado: "pendiente" },
+    { id: 5, pacientes: "Ernesto Roura", especialidad: "Cardiologia", estado: "pendiente" },
+    { id: 6, pacientes: "Juan Pared", especialidad: "Cardiologia", estado: "pendiente" },
+    { id: 7, pacientes: "Marisol Nuñez", especialidad: "Cardiologia", estado: "pendiente" }
 ];
 
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
     const [turnos, setTurnos] = useState(turnosDelDia);
 
-    const turnosFiltrados = turnos.filter(turno =>
+    const turnosFiltrados = turnos.filter((turno) =>
         turno.pacientes.toLowerCase().includes(busqueda.toLowerCase())
     );
 
     const marcarComoAtendido = (idTurno) => {
-        const turnosActualizados = turnos.map(turno => {
+        const turnosActualizados = turnos.map((turno) => {
             if (turno.id === idTurno) {
-                return { ...turno, estado: "Atendido" };
+                return {
+                    ...turno,
+                    estado: "Atendido"
+                };
             }
 
             return turno;
@@ -35,8 +38,7 @@ const DashboardRecepcion = () => {
     return (
         <Container className="mt-4">
 
-            <FormularioPaciente />
-
+            {/* TURNOS ARRIBA */}
             <h2 className="mb-4">Turnos del Día</h2>
 
             <Row className="mb-4">
@@ -46,30 +48,52 @@ const DashboardRecepcion = () => {
                         className="form-control"
                         placeholder="Buscar Paciente..."
                         value={busqueda}
-                        onChange={(evento) => setBusqueda(evento.target.value)}
+                        onChange={(evento) =>
+                            setBusqueda(evento.target.value)
+                        }
                     />
                 </Col>
             </Row>
 
             <Row>
                 {turnosFiltrados.map((turno) => (
-                    <Col md={4} key={turno.id} className="mb-3">
+                    <Col
+                        md={4}
+                        key={turno.id}
+                        className="mb-3"
+                    >
                         <Card>
                             <Card.Body>
-                                <Card.Title>{turno.pacientes}</Card.Title>
+                                <Card.Title>
+                                    {turno.pacientes}
+                                </Card.Title>
+
+                                <p>
+                                    Especialidad: {turno.especialidad}
+                                </p>
 
                                 <h5 className="mt-3">
-                                    {turno.estado === "Atendido"
-                                        ? <Badge bg="success">Atendido</Badge>
-                                        : <Badge bg="warning" text="dark">
+                                    {turno.estado === "Atendido" ? (
+                                        <Badge bg="success">
+                                            Atendido
+                                        </Badge>
+                                    ) : (
+                                        <Badge
+                                            bg="warning"
+                                            text="dark"
+                                        >
                                             En Espera
-                                          </Badge>
-                                    }
+                                        </Badge>
+                                    )}
                                 </h5>
 
                                 <Button
-                                    onClick={() => marcarComoAtendido(turno.id)}
-                                    disabled={turno.estado === "Atendido"}
+                                    onClick={() =>
+                                        marcarComoAtendido(turno.id)
+                                    }
+                                    disabled={
+                                        turno.estado === "Atendido"
+                                    }
                                 >
                                     Llamar
                                 </Button>
@@ -78,6 +102,10 @@ const DashboardRecepcion = () => {
                     </Col>
                 ))}
             </Row>
+
+            {/* FORMULARIO Y JSON ABAJO */}
+            <FormularioPaciente />
+
         </Container>
     );
 };
