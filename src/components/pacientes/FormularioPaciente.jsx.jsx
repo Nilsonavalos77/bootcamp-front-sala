@@ -6,8 +6,12 @@ const FormularioPaciente = () => {
 
     const [paciente, setPaciente] = useState({
         nombre: '',
+        apellido: '',
+        dni: '',
         email: '',
-        dni: ''
+        telefono: '',
+        fechaNacimiento: '',
+        direccion: ''
     });
 
     const handleChange = (event) => {
@@ -29,16 +33,16 @@ const FormularioPaciente = () => {
                     name="nombre"
                     value={paciente.nombre}
                     className={styles.campoInput}
-                    placeholder="Nombre completo"
+                    placeholder="Nombre"
                     onChange={handleChange}
                 />
 
                 <input
                     type="text"
-                    name="email"
-                    value={paciente.email}
+                    name="apellido"
+                    value={paciente.apellido}
                     className={styles.campoInput}
-                    placeholder="Email"
+                    placeholder="Apellido"
                     onChange={handleChange}
                 />
 
@@ -48,6 +52,41 @@ const FormularioPaciente = () => {
                     value={paciente.dni}
                     className={styles.campoInput}
                     placeholder="DNI"
+                    onChange={handleChange}
+                />
+
+                <input
+                    type="email"
+                    name="email"
+                    value={paciente.email}
+                    className={styles.campoInput}
+                    placeholder="Email"
+                    onChange={handleChange}
+                />
+
+                <input
+                    type="text"
+                    name="telefono"
+                    value={paciente.telefono}
+                    className={styles.campoInput}
+                    placeholder="Teléfono"
+                    onChange={handleChange}
+                />
+
+                <input
+                    type="date"
+                    name="fechaNacimiento"
+                    value={paciente.fechaNacimiento}
+                    className={styles.campoInput}
+                    onChange={handleChange}
+                />
+
+                <input
+                    type="text"
+                    name="direccion"
+                    value={paciente.direccion}
+                    className={styles.campoInput}
+                    placeholder="Dirección"
                     onChange={handleChange}
                 />
             </form>
