@@ -89,7 +89,7 @@ const FormularioPaciente = () => {
             const data = await respuesta.json();
 
             if (respuesta.ok) {
-                alert("Paciente gaardado en base de datos");
+                alert("Paciente guardado en base de datos");
             } else {
                 alert("error del servidor: " + data.message + "errores: " +data.data);
             }
