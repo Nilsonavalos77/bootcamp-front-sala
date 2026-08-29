@@ -1,14 +1,14 @@
 $color-primario: #1d58ee;
-$color-fondo: #c8c9c9;
+$color-fondo: #c9c9c9;
 $color-borde: #acaaaa;
 
-/* Nesting-anidamiento */
+/*Nesting-anidamiento */
 
 .contenedorFormulario {
     background-color: $color-fondo;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     max-width: 600px;
     margin: 20px auto;
 
@@ -17,18 +17,23 @@ $color-borde: #acaaaa;
         margin-bottom: 20px;
         text-align: center;
     }
-}
 
-.campoInput {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid $color-borde;
-    border-radius: 5px;
+    .textoError {
+        color: red;
+        padding-bottom: 8px;
+    }
 
-    &:focus {
-        outline: none;
-        border-color: $color-primario;
-        box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+    .campoInput {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid $color-borde;
+        border-radius: 5px;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primario;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+        }
     }
 }
