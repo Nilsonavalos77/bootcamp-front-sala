@@ -78,7 +78,7 @@ const FormularioPaciente = () => {
 
         try {
 
-            const respuesta = await fetch("http://localhost:3000/api/v1/pacientes", {
+            const respuesta = await fetch("pacientes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
