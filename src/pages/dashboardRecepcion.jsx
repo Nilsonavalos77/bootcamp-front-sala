@@ -13,9 +13,19 @@ const DashboardRecepcion = () => {
 
     const [turnos, setTurnos] = useState([]);
 
+    const [pacientes, setPacientes] = useState([]);
+
+    const [busquedaPaciente, setBusquedaPaciente] = useState("");
+
     const turnosFiltrados = turnos.filter((turno) =>
         turno.paciente?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
     );
+
+const pacientesFiltrados = pacientes.filter((paciente) =>
+    paciente.nombre.toLowerCase().includes(busquedaPaciente.toLowerCase()) ||
+    paciente.dni.includes(busquedaPaciente)
+);
+
 
     useEffect(() => {
 
@@ -40,6 +50,20 @@ const DashboardRecepcion = () => {
         obtenerTurnos();
 
     }, []);
+
+useEffect(() => {
+    const obtenerPacientes = async () => {
+        try {
+            const respuesta = await clientAxios.get("/pacientes");
+            setPacientes(respuesta.data.data);
+            console.log("Pacientes:", respuesta.data);
+        } catch (error) {
+            console.error("Error al obtener pacientes:", error);
+        }
+    };
+
+    obtenerPacientes();
+}, []);
 
 
     const marcarComoAtendido = (idTurno) => {
@@ -203,6 +227,38 @@ const DashboardRecepcion = () => {
             {/* FORMULARIO Y JSON ABAJO */}
 
             <FormularioPaciente />
+
+            <h2 className="mt-5 mb-4">Pacientes Cargados</h2>
+
+            <input
+    type="text"
+    className="form-control mb-4"
+    placeholder="Buscar paciente por nombre o DNI..."
+    value={busquedaPaciente}
+    onChange={(evento) => setBusquedaPaciente(evento.target.value)}
+/>
+
+<Row>
+    {pacientesFiltrados.map((paciente) => (
+        <Col md={4} key={paciente.id} className="mb-3">
+            <Card>
+                <Card.Body>
+                    <Card.Title>
+                        {paciente.nombre}
+                    </Card.Title>
+
+                    <p>DNI: {paciente.dni}</p>
+
+                    <p>Email: {paciente.email}</p>
+
+                    <p>
+                        Obra Social: {paciente.obraSocial?.nombre}
+                    </p>
+                </Card.Body>
+            </Card>
+        </Col>
+    ))}
+</Row>
 
         </Container>
 

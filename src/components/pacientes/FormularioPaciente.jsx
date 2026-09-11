@@ -3,6 +3,7 @@ import styles from './FormularioPaciente.module.scss';
 import JsonDebugger from '../utils/JsonDebugger';
 import { Button } from 'react-bootstrap';
 import { validarDatos } from '../utils/validaciones';
+import clientAxios from '../../config/axios';
 
 const reglasPaciente = {
     nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio." : null,
@@ -78,26 +79,20 @@ const FormularioPaciente = () => {
 
         try {
 
-            const respuesta = await fetch("pacientes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(paciente)
-            });
+            const respuesta = await clientAxios.post("/pacientes", paciente);
 
-            const data = await respuesta.json();
+            const data = respuesta.data;
 
-            if (respuesta.ok) {
+            if (respuesta.status >= 200 && respuesta.status < 300) {
                 alert("Paciente guardado en base de datos");
             } else {
-                alert("error del servidor: " + data.message + "errores: " +data.data);
+                alert("error del servidor: " + data.message + " errores: " + data.data);
             }
 
-        } catch (error) {
-            console.error("Error de conexion", error);
-            alert("el servidor esta apagado o no responde");
-        }
+       } catch (error) {
+    console.error("Error del servidor:", error.response?.data);
+    alert("Error al guardar: " + JSON.stringify(error.response?.data));
+}
 
         console.log(paciente);
     };
