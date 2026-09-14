@@ -1,4 +1,4 @@
-import DashboardRecepcion from "./pages/DashboardRecepcion";
+import DashboardRecepcion from "./pages/dashboardRecepcion";
 
 function App() {
     return <DashboardRecepcion />;
