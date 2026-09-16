@@ -8,24 +8,26 @@ import DireccionPaciente from './DireccionPaciente';
 import HistorialMedicoPaciente from './HistorialMedicoPaciente';
 import ObraSocialPaciente from './ObraSocial';
 import TelefonoPaciente from './TelefonoPaciente';
+import clientesAxios from "../../config/axios";
 
 const reglasPaciente = {
     nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio." : null,
-    dni: (valor) => valor.length < 8 ? "El DNI debe tener 8 numeros minimo" : null,
-    email: (valor) => !valor.includes("@") ? "Debe ser un correo valido. " : null
+    dni: (valor) => valor.length < 8 ? "El DNI debe tener 8 números mínimo" : null,
+    email: (valor) => !valor.includes("@") ? "Debe ser un correo válido." : null
+};
+
+const estadoInicial = {
+    nombre: "",
+    dni: "",
+    email: "",
+    direccion: { calle: "", numero: "", piso: "", departamento: "", barrio: "" },
+    telefono: { tipo: "CELULAR", codigoArea: "", numero: "" },
+    obraSocial: { nombre: "", numeroAfiliado: "" },
+    historialMedico: { fecha: "", diagnostico: "", tratamiento: "", medico: "" }
 };
 
 const FormularioPaciente = ({ onPacienteGuardado }) => {
-    const [paciente, setPaciente] = useState({
-        nombre: "",
-        dni: "",
-        email: "",
-        direccion: { calle: "", numero: "", piso: "", departamento: "", barrio: "" },
-        telefono: { tipo: "CELULAR", codigoArea: "", numero: "" },
-        obraSocial: { nombre: "", numeroAfiliado: "" },
-        historialMedico: { fecha: "", diagnostico: "", tratamiento: "", medico: "" }
-    });
-
+    const [paciente, setPaciente] = useState(estadoInicial);
     const [errores, setErrores] = useState({});
 
     const handleChange = (evento) => {
@@ -54,23 +56,52 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
         if (Object.keys(nuevosErrores).length > 0) return;
 
         try {
-            const respuesta = await fetch("http://localhost:3000/api/v1/pacientes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paciente)
+            // 1. Guardar Paciente
+            const resPaciente = await clientesAxios.post('/pacientes', paciente);
+            
+            const pacienteCreado = resPaciente.data?.data || resPaciente.data;
+            const idPaciente = pacienteCreado?._id || pacienteCreado?.id;
+
+            if (!idPaciente) {
+                throw new Error("No se obtuvo un ID válido al crear el paciente.");
+            }
+
+            // 2. Fecha para el Turno (Futura por 2 minutos)
+            const fechaFutura = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+
+            // 3. Crear Turno adjuntando las cabeceras de autorización
+            const payloadTurno = {
+                paciente: idPaciente,
+                especialidad: "cardiologia",
+                fechaTurno: fechaFutura,
+                estado: "pendiente",
+                observaciones: paciente.historialMedico?.diagnostico || "Atención por guardia"
+            };
+
+            // Intentar obtener el token guardado en localStorage (si existe en tu app)
+            const token = localStorage.getItem('token') || 'token123';
+
+            await clientesAxios.post('/turnos', payloadTurno, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'authorization': token,
+                    'x-origen': 'recepcion'
+                }
             });
 
-            const data = await respuesta.json();
+            alert("¡Paciente y Turno creados con éxito!");
 
-            if (respuesta.ok) {
-                alert("Paciente guardado en base de datos");
-                if (onPacienteGuardado) onPacienteGuardado(data);
-            } else {
-                alert("Error del servidor: " + data.message);
+            setPaciente(estadoInicial);
+            setErrores({});
+
+            if (typeof onPacienteGuardado === 'function') {
+                await onPacienteGuardado();
             }
+
         } catch (error) {
-            console.error("Error de conexión", error);
-            alert("El servidor está apagado o no responde");
+            console.error("Error al procesar:", error.response?.data || error);
+            const msg = error.response?.data?.message || error.message || "Error de permisos o validación";
+            alert("Error: " + msg);
         }
     };
 
@@ -83,7 +114,7 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
                 <TelefonoPaciente telefono={paciente.telefono} onChange={handleChange} styles={styles} />
                 <ObraSocialPaciente obraSocial={paciente.obraSocial} onChange={handleChange} styles={styles} />
                 <HistorialMedicoPaciente historialMedico={paciente.historialMedico} onChange={handleChange} styles={styles} />
-                <Button type="submit">Guardar</Button>
+                <Button type="submit" className="mt-3">Guardar</Button>
             </form>
             <JsonDebugger data={paciente} titulo="ESTADO DEL JSON" />
         </div>
