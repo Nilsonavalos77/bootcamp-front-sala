@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Button, Placeholder } from "react-bootstrap";
+import { toast } from 'sonner';
 import FormularioPaciente from "../components/pacientes/FormularioPaciente";
 import clientAxios from "../config/axios";
 
@@ -9,49 +10,57 @@ const DashboardRecepcion = () => {
 
     const [turnos, setTurnos] = useState([]);
     const [pacientes, setPacientes] = useState([]);
-
-    const obtenerTurnos = useCallback(async () => {
-        try {
-            const respuesta = await clientAxios.get("/turnos");
-            const datos = respuesta.data?.data || (Array.isArray(respuesta.data) ? respuesta.data : []);
-            setTurnos(datos);
-        } catch (error) {
-            console.error("Error al obtener turnos:", error);
-            setTurnos([]);
-        }
-    }, []);
-
-    const obtenerPacientes = useCallback(async () => {
-        try {
-            const respuesta = await clientAxios.get("/pacientes");
-            const datos = respuesta.data?.data || (Array.isArray(respuesta.data) ? respuesta.data : []);
-            setPacientes(datos);
-        } catch (error) {
-            console.error("Error al obtener pacientes:", error);
-            setPacientes([]);
-        }
-    }, []);
-
-    const recargarDatos = useCallback(() => {
-        obtenerTurnos();
-        obtenerPacientes();
-    }, [obtenerTurnos, obtenerPacientes]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        recargarDatos();
-    }, [recargarDatos]);
+        const obtenerTurnosDelBackend = async () => {
+            try {
+                const respuesta = await clientAxios.get('/turnos');
+                const datos = respuesta.data?.data || (Array.isArray(respuesta.data) ? respuesta.data : []);
+                setTurnos(datos);
+            } catch (error) {
+                console.error("Hubo un error al sincronizar turnos:", error);
+                toast.error("Error de red: no se puede conectar al servidor");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        const obtenerPacientesDelBackend = async () => {
+            try {
+                const respuesta = await clientAxios.get('/pacientes');
+                const datos = respuesta.data?.data || (Array.isArray(respuesta.data) ? respuesta.data : []);
+                setPacientes(datos);
+            } catch (error) {
+                console.error("Error al cargar pacientes:", error);
+            }
+        };
+
+        obtenerTurnosDelBackend();
+        obtenerPacientesDelBackend();
+    }, []);
 
     const handleMarcarAtendido = async (idTurno) => {
         try {
             await clientAxios.patch(`/turnos/${idTurno}`);
-            await obtenerTurnos();
+
+            const turnosActualizados = turnos.map(turno => {
+                const currentId = turno._id || turno.id;
+                if (currentId === idTurno) return { ...turno, estado: "atendido" };
+                return turno;
+            });
+
+            setTurnos(turnosActualizados);
+            toast.success("Turno marcado como atendido correctamente.");
+
         } catch (error) {
-            console.error("Error al marcar como atendido:", error);
+            console.error("Error al actualizar estado:", error);
+            toast.error("Error al conectar con el servidor.");
         }
     };
 
     const handleLlamarPaciente = (nombrePaciente) => {
-        alert(`🔔 Llamando a recepción al paciente: ${nombrePaciente}`);
+        toast.info(`🔔 Llamando a recepción al paciente: ${nombrePaciente}`);
     };
 
     const turnosFiltrados = (turnos || []).filter((turno) => {
@@ -90,7 +99,23 @@ const DashboardRecepcion = () => {
             </Row>
 
             <Row>
-                {turnosFiltrados.length === 0 ? (
+                {isLoading ? (
+                    [1, 2, 3].map((fantasma) => (
+                        <Col md={4} key={fantasma} className="mb-3">
+                            <Card className="shadow-sm border">
+                                <Card.Body>
+                                    <Placeholder as={Card.Title} animation="glow">
+                                        <Placeholder xs={8} />
+                                    </Placeholder>
+                                    <Placeholder as="p" animation="glow" className="mt-2">
+                                        <Placeholder xs={5} />
+                                    </Placeholder>
+                                    <Placeholder.Button variant="primary" xs={12} className="mt-2" disabled />
+                                </Card.Body>
+                            </Card>
+                        </Col> 
+                    ))
+                ) : turnosFiltrados.length === 0 ? (
                     <Col>
                         <p>No hay turnos registrados o no coinciden con la búsqueda.</p>
                     </Col>
@@ -98,6 +123,7 @@ const DashboardRecepcion = () => {
                     turnosFiltrados.map((turno) => {
                         const idTurno = turno._id || turno.id;
                         const nombrePaciente = turno.paciente?.nombre || turno.paciente?.nombreCompleto || "Sin Nombre";
+                        const dniPaciente = turno.paciente?.dni || "Sin DNI";
                         
                         const fechaObj = turno.fechaTurno ? new Date(turno.fechaTurno) : null;
                         const fechaTexto = fechaObj 
@@ -113,7 +139,10 @@ const DashboardRecepcion = () => {
                                         <Card.Title className="fw-bold text-uppercase mb-1">
                                             {nombrePaciente}
                                         </Card.Title>
-                                        <h5 className="text-dark mb-3">{turno.paciente?.dni || "Sin DNI"}</h5>
+
+                                        <p className="text-muted small mb-2">
+                                            <strong>DNI:</strong> {dniPaciente}
+                                        </p>
 
                                         <Card className="p-2 my-2 bg-light border-0 w-100">
                                             <p className="mb-0 text-monospace small">
@@ -121,11 +150,10 @@ const DashboardRecepcion = () => {
                                             </p>
                                         </Card>
 
-                                        <div className="d-flex flex-column gap-2 mt-3 align-items-center w-100">
+                                        <div className="d-flex gap-2 mt-3 justify-content-center w-100">
                                             <Button 
                                                 variant={esAtendido ? "secondary" : "success"}
                                                 size="sm"
-                                                className="px-4"
                                                 onClick={() => handleMarcarAtendido(idTurno)}
                                                 disabled={esAtendido}
                                             >
@@ -135,7 +163,6 @@ const DashboardRecepcion = () => {
                                             <Button 
                                                 variant="primary" 
                                                 size="sm"
-                                                className="px-4"
                                                 onClick={() => handleLlamarPaciente(nombrePaciente)}
                                             >
                                                 Llamar
@@ -149,7 +176,7 @@ const DashboardRecepcion = () => {
                 )}
             </Row>
 
-            <FormularioPaciente onPacienteGuardado={recargarDatos} />
+            <FormularioPaciente />
 
             <h2 className="mt-5 mb-4">Pacientes Cargados</h2>
 

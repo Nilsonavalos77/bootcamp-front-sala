@@ -1,7 +1,16 @@
-import DashboardRecepcion from "./pages/dashboardRecepcion";
+import { Toaster } from 'sonner';
+import DashboardRecepcion from "./pages/dashboardRecepcion"
+import FormularioPaciente from "./components/pacientes/FormularioPaciente"
 
 function App() {
-    return <DashboardRecepcion />;
+
+  return (
+    <>
+      <Toaster position="top-right" richColors/>
+      <DashboardRecepcion></DashboardRecepcion>
+      <FormularioPaciente></FormularioPaciente>
+    </>
+  )
 }
 
-export default App;
+export default App
