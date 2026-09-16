@@ -8,7 +8,6 @@ function App() {
     <>
       <Toaster position="top-right" richColors/>
       <DashboardRecepcion></DashboardRecepcion>
-      <FormularioPaciente></FormularioPaciente>
     </>
   )
 }
