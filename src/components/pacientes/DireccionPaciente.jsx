@@ -1,0 +1,47 @@
+const DireccionPaciente = ({ direccion, onChange, styles }) => (
+    <fieldset>
+        <legend>Dirección</legend>
+        <input
+            type="text"
+            name="direccion.calle"
+            value={direccion.calle}
+            className={styles.campoInput}
+            placeholder="Calle"
+            onChange={onChange}
+        />
+        <input
+            type="text"
+            name="direccion.numero"
+            value={direccion.numero}
+            className={styles.campoInput}
+            placeholder="Número"
+            onChange={onChange}
+        />
+        <input
+            type="text"
+            name="direccion.piso"
+            value={direccion.piso}
+            className={styles.campoInput}
+            placeholder="Piso"
+            onChange={onChange}
+        />
+        <input
+            type="text"
+            name="direccion.departamento"
+            value={direccion.departamento}
+            className={styles.campoInput}
+            placeholder="Departamento"
+            onChange={onChange}
+        />
+        <input
+            type="text"
+            name="direccion.barrio"
+            value={direccion.barrio}
+            className={styles.campoInput}
+            placeholder="Barrio"
+            onChange={onChange}
+        />
+    </fieldset>
+);
+
+export default DireccionPaciente;
