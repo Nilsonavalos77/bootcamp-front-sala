@@ -12,6 +12,13 @@ const NavbarPrincipal = () => {
     navigate('/');
   };
 
+  const linkStyle = (path) => 
+    `px-3 py-2 rounded-2 fw-semibold transition-all ${
+      location.pathname === path 
+        ? 'bg-primary-subtle text-primary' 
+        : 'text-secondary hover-bg-light'
+    }`;
+
   return (
     <Navbar 
       expand="lg" 
@@ -33,27 +40,23 @@ const NavbarPrincipal = () => {
 
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto align-items-lg-center gap-2 mt-3 mt-lg-0">
-            <Nav.Link 
-              as={Link} 
-              to="/dashboard" 
-              className={`px-3 py-2 rounded-2 fw-semibold transition-all ${
-                location.pathname === '/dashboard' 
-                  ? 'bg-primary-subtle text-primary' 
-                  : 'text-secondary hover-bg-light'
-              }`}
-            >
+            <Nav.Link as={Link} to="/dashboard" className={linkStyle('/dashboard')}>
               Dashboard
             </Nav.Link>
 
-            <Nav.Link 
-              as={Link} 
-              to="/nuevo-paciente" 
-              className={`px-3 py-2 rounded-2 fw-semibold transition-all ${
-                location.pathname === '/nuevo-paciente' 
-                  ? 'bg-primary-subtle text-primary' 
-                  : 'text-secondary hover-bg-light'
-              }`}
-            >
+            <Nav.Link as={Link} to="/medicos" className={linkStyle('/medicos')}>
+              Médicos
+            </Nav.Link>
+
+            <Nav.Link as={Link} to="/pacientes" className={linkStyle('/pacientes')}>
+              Pacientes
+            </Nav.Link>
+
+            <Nav.Link as={Link} to="/turnos" className={linkStyle('/turnos')}>
+              Turnos del día
+            </Nav.Link>
+
+            <Nav.Link as={Link} to="/nuevo-paciente" className={linkStyle('/nuevo-paciente')}>
               Registrar Paciente
             </Nav.Link>
 

@@ -7,6 +7,9 @@ import DetalleTurno from './components/turnos/DetalleTurno';
 import NotFound from './components/utils/NotFound';
 import Login from "./pages/Login";
 import RutaProtegida from "./components/auth/RutaProtegida";
+import PacientesPage from './pages/PacientesPage';
+import MedicosPage from './pages/MedicosPage';
+import TurnosPage from './pages/TurnosPage';
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
             <Route path="/dashboard" element={<DashboardRecepcion />} />
             <Route path="/nuevo-paciente" element={<FormularioPaciente />} />
             <Route path="/turno-detalle/:id" element={<DetalleTurno />} />
+            <Route path="/pacientes" element={<PacientesPage />} />
+            <Route path="/medicos" element={<MedicosPage />} />
+            <Route path="/turnos" element={<TurnosPage />} />
           </Route>
         </Route>
 

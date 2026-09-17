@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import styles from './formulariopaciente.module.scss';
 import JsonDebugger from '../utils/jsondebugger';
 import { Button } from 'react-bootstrap';
@@ -29,6 +31,7 @@ const estadoInicial = {
 const FormularioPaciente = ({ onPacienteGuardado }) => {
     const [paciente, setPaciente] = useState(estadoInicial);
     const [errores, setErrores] = useState({});
+    const navigate = useNavigate(); 
 
     const handleChange = (evento) => {
         const { name, value } = evento.target;
@@ -56,7 +59,6 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
         if (Object.keys(nuevosErrores).length > 0) return;
 
         try {
-            // 1. Guardar Paciente
             const resPaciente = await clientesAxios.post('/pacientes', paciente);
             
             const pacienteCreado = resPaciente.data?.data || resPaciente.data;
@@ -66,10 +68,8 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
                 throw new Error("No se obtuvo un ID válido al crear el paciente.");
             }
 
-            // 2. Fecha para el Turno (Futura por 2 minutos)
             const fechaFutura = new Date(Date.now() + 2 * 60 * 1000).toISOString();
 
-            // 3. Crear Turno adjuntando las cabeceras de autorización
             const payloadTurno = {
                 paciente: idPaciente,
                 especialidad: "cardiologia",
@@ -78,18 +78,16 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
                 observaciones: paciente.historialMedico?.diagnostico || "Atención por guardia"
             };
 
-            // Intentar obtener el token guardado en localStorage (si existe en tu app)
-            const token = localStorage.getItem('token') || 'token123';
+            const token = localStorage.getItem('token');
 
             await clientesAxios.post('/turnos', payloadTurno, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'authorization': token,
                     'x-origen': 'recepcion'
                 }
             });
 
-            alert("¡Paciente y Turno creados con éxito!");
+            toast.success("¡Paciente y Turno creados con éxito!");
 
             setPaciente(estadoInicial);
             setErrores({});
@@ -98,10 +96,12 @@ const FormularioPaciente = ({ onPacienteGuardado }) => {
                 await onPacienteGuardado();
             }
 
+            navigate('/dashboard');
+
         } catch (error) {
             console.error("Error al procesar:", error.response?.data || error);
-            const msg = error.response?.data?.message || error.message || "Error de permisos o validación";
-            alert("Error: " + msg);
+            const msg = error.response?.data?.data || error.response?.data?.message || error.message || "Error al procesar el formulario";
+            toast.error("Error: " + msg);
         }
     };
 
