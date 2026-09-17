@@ -51,7 +51,7 @@ const Login = () => {
               🏥
             </span>
             <h3 className="fw-bold">Salita Municipal</h3>
-            <p className="text-muted">Ingresá tus credenciales para acceder</p>
+            <p className="text-muted">Ingresá tus datos para acceder</p>
           </div>
 
           {error && <Alert variant="danger">{error}</Alert>}
@@ -61,7 +61,7 @@ const Login = () => {
               <Form.Label className="fw-semibold">Correo Electrónico</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="admin@salita.com"
+                placeholder="....@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
